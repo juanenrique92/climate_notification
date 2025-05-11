@@ -29,7 +29,7 @@ def get_gofrinator_credentials():
     file_path = os.path.join(os.path.dirname(os.getcwd()),'credentials','telegram_gofrinator.csv')
     df  = pd.read_csv(file_path, sep=',')
     TOKEN      = df['value'][df['item']=='token'].iloc[0]
-    CHAT_ID    = df['value'][df['item']=='chat-id'].iloc[0]
+    CHAT_ID    = df['value'][df['item']=='chat-id'].tolist()
     del df
     return TOKEN, CHAT_ID
 
@@ -138,13 +138,14 @@ def formatear_mensaje_tiempo(TODAY_ISO, TEMP, FEEL, WIND, HUMD, SKY, TEMPS, FEEL
 
 
 def telegram_notify(MESSAGE,TOKEN, CHAT_ID):
-    url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
-    params = {
-        "chat_id": CHAT_ID,
-        "text": MESSAGE,
-        "parse_mode": "HTML"
-    }
-    requests.get(url, params=params)
+    for u in CHAT_ID:
+        url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
+        params = {
+            "chat_id": u,
+            "text": MESSAGE,
+            "parse_mode": "HTML"
+        }
+        requests.get(url, params=params)
 
 if __name__ == "__main__":
     API_KEY_OW, API_KEY_AEMET = read_credentials()
